@@ -77,8 +77,11 @@ class Util {
 		return \OC_Util::getVersion();
 	}
 
-	public static function hasExtendedSupport(): bool {
-		return \OC::$server->getConfig()->getSystemValueBool('extendedSupport', false);
+	/**
+	 * @return bool
+	 */
+	public static function hasExtendedSupport() {
+		return (bool)\OC::$server->getConfig()->getSystemValue('extendedSupport', false);
 	}
 
 	/**
