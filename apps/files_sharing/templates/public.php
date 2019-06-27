@@ -7,6 +7,10 @@
 	<link rel="image_src" href="<?php p($_['previewImage']); ?>" />
 <?php endif; ?>
 
+<?php if (isset($_['openInApp'])): ?>
+	<a href="<?php p($_['openInApp']); ?>" class="openInApp button primary">Open in the Android app</a>
+<?php endif; ?>
+
 <input type="hidden" id="sharingUserId" value="<?php p($_['owner']) ?>">
 <input type="hidden" id="filesApp" name="filesApp" value="1">
 <input type="hidden" id="isPublic" name="isPublic" value="1">

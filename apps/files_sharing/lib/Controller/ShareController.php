@@ -324,6 +324,12 @@ class ShareController extends AuthPublicShareController {
 		$shareTmpl['fileSize'] = \OCP\Util::humanFileSize($shareNode->getSize());
 		$shareTmpl['hideDownload'] = $share->getHideDownload();
 
+		if ($this->request->isUserAgent([
+			IRequest::USER_AGENT_CLIENT_ANDROID
+		])) {
+			$shareTmpl['openInApp'] = 'nc://shownode/server:' . $this->request->getServerHost() . '&fileId:' . $share->getNodeId();
+		}
+
 		$hideFileList = false;
 
 		if ($shareNode instanceof \OCP\Files\Folder) {
