@@ -325,7 +325,7 @@ class ShareController extends AuthPublicShareController {
 		$shareTmpl['hideDownload'] = $share->getHideDownload();
 
 		if ($this->request->isUserAgent([
-			IRequest::USER_AGENT_CLIENT_ANDROID
+				'/Android/'
 		])) {
 			$shareTmpl['openInApp'] = 'nc://shownode/server:' . $this->request->getServerHost() . '&fileId:' . $share->getNodeId();
 		}
