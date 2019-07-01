@@ -140,6 +140,9 @@ class OC_App {
 	 * @throws Exception
 	 */
 	public static function loadApp(string $app) {
+		if (self::isAppLoaded($app)) {
+			return;
+		}
 		self::$loadedApps[] = $app;
 		$appPath = self::getAppPath($app);
 		if($appPath === false) {

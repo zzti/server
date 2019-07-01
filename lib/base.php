@@ -637,7 +637,7 @@ class OC {
 		}
 
 		\OC::$server->getEventLogger()->start('init_session', 'Initialize session');
-		OC_App::loadApps(array('session'));
+		OC_App::loadApps(['session']);
 		if (!self::$CLI) {
 			self::initSession();
 		}
@@ -967,10 +967,6 @@ class OC {
 
 		if (!self::$CLI) {
 			try {
-				if (!((bool) $systemConfig->getValue('maintenance', false)) && !\OCP\Util::needUpgrade()) {
-					OC_App::loadApps(array('filesystem', 'logging'));
-					OC_App::loadApps();
-				}
 				OC_Util::setupFS();
 				OC::$server->getRouter()->match(\OC::$server->getRequest()->getRawPathInfo());
 				return;
@@ -993,7 +989,6 @@ class OC {
 
 		// Someone is logged in
 		if (\OC::$server->getUserSession()->isLoggedIn()) {
-			OC_App::loadApps();
 			OC_User::setupBackends();
 			OC_Util::setupFS();
 			// FIXME
