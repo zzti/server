@@ -325,6 +325,8 @@ export default {
 				.then(() => {
 					this.loading.wipe = false
 					this.loading.all = false
+
+					OCP.Toast.success(t('settings', `Remote wipe for ${userid} successfully started. It may take some time for all clients to start the wiping process.`))
 				});
 		},
 
