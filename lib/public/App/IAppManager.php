@@ -96,6 +96,14 @@ interface IAppManager {
 	public function hasProtectedAppType($types);
 
 	/**
+	 * @param string $appId
+	 * @param string $type
+	 * @return bool
+	 * @since 17.0.0
+	 */
+	public function isAppType(string $appId, string $type): bool;
+
+	/**
 	 * Enable an app only for specific groups
 	 *
 	 * @param string $appId

@@ -155,7 +155,7 @@ class OC_App {
 				self::requireAppFile($app);
 			} catch (Throwable $ex) {
 				\OC::$server->getLogger()->logException($ex);
-				if (!\OC::$server->getAppManager()->isShipped($app)) {
+				if (!\OC::$server->getAppManager()->isShipped($app) && !\OC::$server->getAppManager()->isAppType($app, 'authentication')) {
 					// Only disable apps which are not shipped
 					\OC::$server->getAppManager()->disableApp($app);
 					self::$autoDisabledApps[] = $app;

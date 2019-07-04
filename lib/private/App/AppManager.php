@@ -250,6 +250,20 @@ class AppManager implements IAppManager {
 	}
 
 	/**
+	 * @param string $appId
+	 * @param string $type
+	 * @return bool
+	 * @since 17.0.0
+	 */
+	public function isAppType(string $appId, string $type): bool {
+		$appData = $this->getAppInfo($appId);
+		if (isset($appData['types'])) {
+			return in_array($type, $appData['types'], true);
+		}
+		return false;
+	}
+
+	/**
 	 * Enable an app only for specific groups
 	 *
 	 * @param string $appId
