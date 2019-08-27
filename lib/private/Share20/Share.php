@@ -396,7 +396,9 @@ class Share implements \OCP\Share\IShare {
 		if (!is_string($shareOwner)) {
 			throw new \InvalidArgumentException();
 		}
-		//TODO checks
+		if(!$this->userManager->userExists($this->shareOwner)) {
+			throw new \InvalidArgumentException('Share owner doesn\'t exist');
+		}
 
 		$this->shareOwner = $shareOwner;
 		return $this;

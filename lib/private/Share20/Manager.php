@@ -1173,6 +1173,9 @@ class Manager implements IManager {
 			} catch (ShareNotFound $e) {
 				unset($shares[$key]);
 			}
+			if (!$this->userManager->userExists($share->getShareOwner())) {
+				unset($shares[$key]);
+			}
 		}
 
 		return $shares;

@@ -597,7 +597,11 @@ class DefaultShareProvider implements IShareProvider {
 		$cursor = $qb->execute();
 		$shares = [];
 		while ($data = $cursor->fetch()) {
-			$shares[$data['fileid']][] = $this->createShare($data);
+			try {
+				$shares[$data['fileid']][] = $this->createShare($data);
+			} catch (\InvalidArgumentException $e) {
+				// ignore exception and leave out share
+			}
 		}
 		$cursor->closeCursor();
 
@@ -727,8 +731,11 @@ class DefaultShareProvider implements IShareProvider {
 
 		$shares = [];
 		while($data = $cursor->fetch()) {
-			$shares[] = $this->createShare($data);
-		}
+			try {
+				$shares[] = $this->createShare($data);
+			} catch (\InvalidArgumentException $e) {
+				// ignore exception and leave out share
+			}		}
 		$cursor->closeCursor();
 
 		return $shares;
@@ -799,7 +806,11 @@ class DefaultShareProvider implements IShareProvider {
 
 			while($data = $cursor->fetch()) {
 				if ($this->isAccessibleResult($data)) {
-					$shares[] = $this->createShare($data);
+					try {
+						$shares[] = $this->createShare($data);
+					} catch (\InvalidArgumentException $e) {
+						// ignore exception and leave out share
+					}
 				}
 			}
 			$cursor->closeCursor();
@@ -864,7 +875,11 @@ class DefaultShareProvider implements IShareProvider {
 					}
 
 					if ($this->isAccessibleResult($data)) {
-						$shares2[] = $this->createShare($data);
+						try {
+							$shares2[] = $this->createShare($data);
+						} catch (\InvalidArgumentException $e) {
+							// ignore exception and leave out share
+						}
 					}
 				}
 				$cursor->closeCursor();
