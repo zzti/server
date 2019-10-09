@@ -403,7 +403,7 @@ abstract class Common implements Storage, ILockingStorage, IWriteStreamStorage {
 	 * @return string|false uid or false
 	 */
 	public function getOwner($path) {
-		if ($this->owner === null) {
+		if ($this->owner === null || $this->owner === false) {
 			$this->owner = \OC_User::getUser();
 		}
 
