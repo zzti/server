@@ -408,6 +408,8 @@
 
 
 			OC.Plugins.attach('OCA.Files.FileList', this);
+
+			OCA.Files.App && OCA.Files.App.updateCurrentFileList(this);
 		},
 
 		/**
@@ -683,6 +685,7 @@
 		 * Event handler when leaving previously hidden state
 		 */
 		_onShow: function(e) {
+			OCA.Files.App && OCA.Files.App.updateCurrentFileList(this);
 			if (this.shown) {
 				if (e.itemId === this.id) {
 					this._setCurrentDir('/', false);
