@@ -201,17 +201,11 @@ class SMB extends Common implements INotifyStorage {
 
 	protected function directoryIsReadable(string $path): bool {
 		try {
-			// SMB doesn't seem to have a way to get the permissions of a folder, so instead we
-			// have to use a workaround
-			//
-			// if we try to access a file in a folder we dont have access to we get a Forbidden
-			// if we do have access we got a not found
-			$this->share->stat($path . '/__non_existing__' . uniqid());
+			$this->share->dir($path);
 		} catch (ForbiddenException $e) {
 			return false;
-		} catch (NotFoundException $e) {
-			return true;
 		}
+		return true;
 	}
 
 	/**
