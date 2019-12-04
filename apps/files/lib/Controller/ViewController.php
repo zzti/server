@@ -240,6 +240,7 @@ class ViewController extends Controller {
 		$nav->assign('total_space', $totalSpace);
 		$nav->assign('quota', $storageInfo['quota']);
 		$nav->assign('usage_relative', $storageInfo['relative']);
+		$nav->assign('user', $user);
 
 		$contentItems = [];
 
