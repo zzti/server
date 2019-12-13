@@ -43,6 +43,9 @@ class FileMimeType extends AbstractStringCheck implements IFileCheck {
 	/** @var IMimeTypeDetector */
 	protected $mimeTypeDetector;
 
+	/** @var bool */
+	protected $directoryCheck = false;
+
 	/**
 	 * @param IL10N $l
 	 * @param IRequest $request
@@ -52,6 +55,7 @@ class FileMimeType extends AbstractStringCheck implements IFileCheck {
 		parent::__construct($l);
 		$this->request = $request;
 		$this->mimeTypeDetector = $mimeTypeDetector;
+		$this->directoryCheck = false;
 	}
 
 	/**
@@ -61,6 +65,7 @@ class FileMimeType extends AbstractStringCheck implements IFileCheck {
 	 */
 	public function setFileInfo(IStorage $storage, string $path, bool $isDir = false): void {
 		$this->_setFileInfo($storage, $path, $isDir);
+		$this->directoryCheck = false;
 		if (!isset($this->mimeType[$this->storage->getId()][$this->path])
 			|| $this->mimeType[$this->storage->getId()][$this->path] === '') {
 
@@ -96,6 +101,16 @@ class FileMimeType extends AbstractStringCheck implements IFileCheck {
 	}
 
 	/**
+	 * @param string $operator
+	 * @param string $value
+	 * @return bool
+	 */
+	public function executeCheck($operator, $value): bool {
+		$this->directoryCheck = \in_array($operator, ['is', '!is'], true) && $value === 'httpd/unix-directory';
+		return parent::executeCheck($operator, $value);
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function getActualValue() {
@@ -107,17 +122,24 @@ class FileMimeType extends AbstractStringCheck implements IFileCheck {
 			return $this->cacheAndReturnMimeType($this->storage->getId(), $this->path, 'httpd/unix-directory');
 		}
 
+		if ($this->isWebDAVRequest() || $this->isPublicWebDAVRequest()) {
+			// Creating a folder
+			if (!$this->storage->file_exists($this->path) && $this->request->getMethod() === 'MKCOL') {
+				return 'httpd/unix-directory';
+			}
+		}
+
+		if ($this->directoryCheck) {
+			// It is not a directory and we are not creating one.
+			// So we stop with this fake mimetype as the current check
+			// only looks for a directory anyway.
+			return '!httpd/unix-directory';
+		}
+
 		if ($this->storage->file_exists($this->path)) {
 			$path = $this->storage->getLocalFile($this->path);
 			$mimeType = $this->mimeTypeDetector->detectContent($path);
 			return $this->cacheAndReturnMimeType($this->storage->getId(), $this->path, $mimeType);
-		}
-
-		if ($this->isWebDAVRequest() || $this->isPublicWebDAVRequest()) {
-			// Creating a folder
-			if ($this->request->getMethod() === 'MKCOL') {
-				return 'httpd/unix-directory';
-			}
 		}
 
 		// We do not cache this, as the file did not exist yet.
