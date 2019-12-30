@@ -382,6 +382,7 @@ export default {
 #app-sidebar {
 	&.has-preview::v-deep .app-sidebar-header__figure {
 		background-size: cover;
+		background-position: top;
 	}
 }
 </style>
