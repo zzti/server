@@ -40,6 +40,8 @@ class NativeFileInfo implements IFileInfo {
 	 */
 	protected $modeCache;
 
+	protected $dosAttrUnavailable = false;
+
 	/**
 	 * @param NativeShare $share
 	 * @param string $path
@@ -113,13 +115,17 @@ class NativeFileInfo implements IFileInfo {
 	 */
 	protected function getMode() {
 		if (!$this->modeCache) {
-			$stat = $this->stat();
-			if (isset($stat['mode'])) {
-				$this->modeCache = ($stat['mode']);
-			} else {
-				$attribute = $this->share->getAttribute($this->path, 'system.dos_attr.mode');
+			try {
+				$attribute = $this->share->getAttribute($this->path, 'system.dos_attr.modea');
 				// parse hex string
 				$this->modeCache = (int)hexdec(substr($attribute, 2));
+			} catch (\Exception $e) {
+				// getxattr should actually just return false here, so not sure why we are getting an error 104 from smbclient_state_errno
+				$this->dosAttrUnavailable = true;
+				$this->modeCache = ($this->stat()['mode'] & 0040000) ? IFileInfo::MODE_DIRECTORY : 0;
+				if (!($this->stat()['mode'] & 0200)) {
+					$this->modeCache ^= IFileInfo::MODE_READONLY;
+				}
 			}
 		}
 		return $this->modeCache;
