@@ -133,12 +133,13 @@ class AvatarController extends Controller {
 		$scope = $account->getProperty(IAccountManager::PROPERTY_AVATAR)->getScope();
 
 		if ($scope !== IAccountManager::VISIBILITY_PUBLIC && $this->userId === null) {
-			// Public avatar access is not allowed
-			return new JSONResponse([], Http::STATUS_NOT_FOUND);
+			// Public avatar access is not allowed, fallback to guest avatar
+			$avatar = $this->avatarManager->getGuestAvatar($userId);
+		} else {
+			$avatar = $this->avatarManager->getAvatar($userId);
 		}
 
 		try {
-			$avatar = $this->avatarManager->getAvatar($userId);
 			$avatarFile = $avatar->getFile($size);
 			$resp = new FileDisplayResponse(
 				$avatarFile,
