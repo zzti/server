@@ -30,6 +30,7 @@ use OCP\Activity\IEvent;
 use OCP\Activity\IProvider;
 use OCP\IGroupManager;
 use OCP\IL10N;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
 use Test\TestCase;
@@ -42,6 +43,9 @@ class BaseTest extends TestCase {
 	/** @var IGroupManager|\PHPUnit_Framework_MockObject_MockObject */
 	protected $groupManager;
 
+	/** @var IURLGenerator|\PHPUnit_Framework_MockObject_MockObject */
+	protected $url;
+
 	/** @var IProvider|Base|\PHPUnit_Framework_MockObject_MockObject */
 	protected $provider;
 
@@ -49,10 +53,12 @@ class BaseTest extends TestCase {
 		parent::setUp();
 		$this->userManager = $this->createMock(IUserManager::class);
 		$this->groupManager = $this->createMock(IGroupManager::class);
+		$this->url = $this->createMock(IURLGenerator::class);
 		$this->provider = $this->getMockBuilder(Base::class)
 			->setConstructorArgs([
 				$this->userManager,
-				$this->groupManager
+				$this->groupManager,
+				$this->url,
 			])
 			->setMethods(['parse'])
 			->getMock();

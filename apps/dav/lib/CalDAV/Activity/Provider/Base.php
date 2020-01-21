@@ -23,12 +23,14 @@
 
 namespace OCA\DAV\CalDAV\Activity\Provider;
 
+use OC_App;
 use OCA\DAV\CalDAV\CalDavBackend;
 use OCP\Activity\IEvent;
 use OCP\Activity\IProvider;
 use OCP\IGroup;
 use OCP\IGroupManager;
 use OCP\IL10N;
+use OCP\IURLGenerator;
 use OCP\IUser;
 use OCP\IUserManager;
 
@@ -46,13 +48,18 @@ abstract class Base implements IProvider {
 	/** @var string[] */
 	protected $groupDisplayNames = [];
 
+	/** @var IURLGenerator */
+	protected $url;
+
 	/**
 	 * @param IUserManager $userManager
 	 * @param IGroupManager $groupManager
+	 * @param IURLGenerator $urlGenerator
 	 */
-	public function __construct(IUserManager $userManager, IGroupManager $groupManager) {
+	public function __construct(IUserManager $userManager, IGroupManager $groupManager, IURLGenerator $urlGenerator) {
 		$this->userManager = $userManager;
 		$this->groupManager = $groupManager;
+		$this->url = $urlGenerator;
 	}
 
 	/**
@@ -80,11 +87,22 @@ abstract class Base implements IProvider {
 			throw new \InvalidArgumentException();
 		}
 
-		return [
+		$params = [
 			'type' => 'calendar-event',
 			'id' => $eventData['id'],
 			'name' => $eventData['name'],
+
 		];
+		if (isset($eventData['link']) && \OC::$server->getAppManager()->isEnabledForUser('calendar')) {
+			try {
+				// The calendar app needs to be manually loaded for the routes to be loaded for some reason
+				OC_App::loadApp('calendar');
+				$params['link'] = $this->url->linkToRouteAbsolute('calendar.view.indexview.timerange.edit', $eventData['link']);
+			} catch (\Exception $error) {
+				// Do nothing
+			}
+		}
+		return $params;
 	}
 
 	/**

@@ -25,7 +25,6 @@
 
 namespace OCA\DAV\CalDAV\Activity;
 
-
 use OCA\DAV\CalDAV\Activity\Provider\Calendar;
 use OCA\DAV\CalDAV\Activity\Provider\Event;
 use OCA\DAV\CalDAV\CalDavBackend;
@@ -442,25 +441,46 @@ class Backend {
 				continue;
 			}
 
+			$params = [
+				'actor' => $event->getAuthor(),
+				'calendar' => [
+					'id' => (int) $calendarData['id'],
+					'uri' => $calendarData['uri'],
+					'name' => $calendarData['{DAV:}displayname'],
+				],
+				'object' => [
+					'id' => $object['id'],
+					'name' => $classification === CalDavBackend::CLASSIFICATION_CONFIDENTIAL && $user !== $owner ? 'Busy' : $object['name'],
+					'classified' => $classification === CalDavBackend::CLASSIFICATION_CONFIDENTIAL && $user !== $owner,
+				],
+			];
+
+			if ($object['type'] === 'event' && strpos($action, Event::SUBJECT_OBJECT_DELETE) === false && $this->checkIfCalendarAppIsActivatedAndCorrectVersion()) {
+				$objectId = base64_encode('/remote.php/dav/calendars/' . $owner . '/' . $calendarData['uri'] . '/' . $objectData['uri']);
+				$timeRange = (new \DateTime())->setTimestamp($objectData['firstoccurence']);
+				$params['object']['link'] = [
+					'view' => 'dayGridMonth',
+					'timeRange' => $timeRange->format('Y-m-d'),
+					'mode' => 'sidebar',
+					'objectId' => $objectId,
+					'recurrenceId' => $objectData['firstoccurence']
+				];
+			}
+
+
 			$event->setAffectedUser($user)
 				->setSubject(
 					$user === $currentUser ? $action . '_self' : $action,
-					[
-						'actor' => $event->getAuthor(),
-						'calendar' => [
-							'id' => (int) $calendarData['id'],
-							'uri' => $calendarData['uri'],
-							'name' => $calendarData['{DAV:}displayname'],
-						],
-						'object' => [
-							'id' => $object['id'],
-							'name' => $classification === CalDavBackend::CLASSIFICATION_CONFIDENTIAL && $user !== $owner ? 'Busy' : $object['name'],
-							'classified' => $classification === CalDavBackend::CLASSIFICATION_CONFIDENTIAL && $user !== $owner,
-						],
-					]
+					$params
 				);
+
 			$this->activityManager->publish($event);
 		}
+	}
+
+	private function checkIfCalendarAppIsActivatedAndCorrectVersion(): bool {
+		$appManager = \OC::$server->getAppManager();
+		return $appManager->isEnabledForUser('calendar') && version_compare($appManager->getAppVersion('calendar'), '2.0.0') >= 0;
 	}
 
 	/**
