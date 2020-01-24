@@ -1935,16 +1935,15 @@
 			// legacy stuff
 			this.$el.find('#dir').val(targetDir);
 
-			if (changeUrl !== false) {
-				var params = {
-					dir: targetDir,
-					previousDir: previousDir
-				};
-				if (fileId) {
-					params.fileId = fileId;
-				}
-				this.$el.trigger(jQuery.Event('changeDirectory', params));
+			var params = {
+				dir: targetDir,
+				previousDir: previousDir
+			};
+			if (fileId) {
+				params.fileId = fileId;
 			}
+			this.$el.trigger(jQuery.Event('changeDirectory', params));
+
 			this.breadcrumb.setDirectory(this.getCurrentDirectory());
 		},
 		/**
