@@ -52,14 +52,18 @@ OC.Settings = _.extend(OC.Settings, {
                                 var groups = $(element).val();
                                 var selection;
                                 if (groups && results.length > 0) {
-                                    selection = _.map((groups || []).split('|').sort(), function(groupId) {
-                                        return {
-                                            id: groupId,
-                                            displayname: results.find(function (group) {
-                                                return group.id === groupId;
-                                            }).displayname
-                                        };
-                                    });
+									selection = _.map(_.filter((groups || []).split('|').sort(), function(groupId) {
+										return results.find(function(group) {
+											return group.id === groupId
+										}) !== undefined
+									}), function(groupId) {
+										return {
+											id: groupId,
+											displayname: results.find(function(group) {
+												return group.id === groupId
+											}).displayname
+										}
+									})
                                 } else if (groups) {
                                     selection = _.map((groups || []).split('|').sort(), function(groupId) {
                                         return {
