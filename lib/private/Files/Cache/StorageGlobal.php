@@ -85,4 +85,10 @@ class StorageGlobal {
 	public function clearCache() {
 		$this->cache = [];
 	}
+
+	public function clearStorageInfo(string $storageId) {
+		if(isset($this->cache[$storageId])) {
+			unset($this->cache[$storageId]);
+		}
+	}
 }
