@@ -195,6 +195,7 @@ class Updater implements IUpdater {
 			if ($sourceStorage === $this->storage) {
 				$this->cache->move($source, $target);
 			} else {
+				// exception might occur here
 				$this->cache->moveFromCache($sourceCache, $source, $target);
 			}
 		}

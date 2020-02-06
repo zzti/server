@@ -258,6 +258,7 @@ class Trashbin {
 			$moveSuccessful = true;
 			if ($trashStorage->file_exists($trashInternalPath)) {
 				$trashStorage->unlink($trashInternalPath);
+				$trashStorage->getUpdater()->remove($trashInternalPath);
 			}
 			$trashStorage->moveFromStorage($sourceStorage, $sourceInternalPath, $trashInternalPath);
 		} catch (\OCA\Files_Trashbin\Exceptions\CopyRecursiveException $e) {
@@ -277,7 +278,14 @@ class Trashbin {
 			return false;
 		}
 
-		$trashStorage->getUpdater()->renameFromStorage($sourceStorage, $sourceInternalPath, $trashInternalPath);
+		try {
+			$trashStorage->getUpdater()->renameFromStorage($sourceStorage, $sourceInternalPath, $trashInternalPath);
+		} catch (\Exception) {
+			// updating the cache failed
+			\OC::$server->getLogger()->error('Failed to move the file in the cache, restoring from trashbin');
+			$sourceStorage->moveFromStorage($trashStorage, $trashInternalPath, $sourceInternalPath);
+			$moveSuccessful = false;
+		}
 
 		if ($moveSuccessful) {
 			$query = \OC_DB::prepare("INSERT INTO `*PREFIX*files_trash` (`id`,`timestamp`,`location`,`user`) VALUES (?,?,?,?)");
