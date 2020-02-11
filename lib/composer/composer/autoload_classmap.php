@@ -966,6 +966,7 @@ return array(
     'OC\\Files\\Notify\\Change' => $baseDir . '/lib/private/Files/Notify/Change.php',
     'OC\\Files\\Notify\\RenameChange' => $baseDir . '/lib/private/Files/Notify/RenameChange.php',
     'OC\\Files\\ObjectStore\\Azure' => $baseDir . '/lib/private/Files/ObjectStore/Azure.php',
+    'OC\\Files\\ObjectStore\\DBReOpenWrapper' => $baseDir . '/lib/private/Files/ObjectStore/DBReOpenWrapper.php',
     'OC\\Files\\ObjectStore\\HomeObjectStoreStorage' => $baseDir . '/lib/private/Files/ObjectStore/HomeObjectStoreStorage.php',
     'OC\\Files\\ObjectStore\\Mapper' => $baseDir . '/lib/private/Files/ObjectStore/Mapper.php',
     'OC\\Files\\ObjectStore\\NoopScanner' => $baseDir . '/lib/private/Files/ObjectStore/NoopScanner.php',
