@@ -35,6 +35,7 @@
 namespace OC\User;
 
 use OC\Accounts\AccountManager;
+use OC\Avatar\AvatarManager;
 use OC\Files\Cache\Storage;
 use OC\Hooks\Emitter;
 use OC_Helper;
@@ -236,6 +237,10 @@ class User implements IUser {
 
 			\OC::$server->getCommentsManager()->deleteReferencesOfActor('users', $this->uid);
 			\OC::$server->getCommentsManager()->deleteReadMarksFromUser($this);
+
+			/** @var IAvatarManager $avatarManager */
+			$avatarManager = \OC::$server->query(AvatarManager::class);
+			$avatarManager->deleteUserAvatar($this->uid);
 
 			$notification = \OC::$server->getNotificationManager()->createNotification();
 			$notification->setUser($this->uid);
