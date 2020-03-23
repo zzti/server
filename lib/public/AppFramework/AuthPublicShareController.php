@@ -163,9 +163,7 @@ abstract class AuthPublicShareController extends PublicShareController {
 	private function getRoute(string $function): string {
 		$app = strtolower($this->appName);
 		$class = (new \ReflectionClass($this))->getShortName();
-		if ($this->appName === 'files_sharing') {
-			$class = strtolower($class);
-		} else if (substr($class, -10) === 'Controller') {
+		if (substr($class, -10) === 'Controller') {
 			$class = substr($class, 0, -10);
 		}
 		return $app .'.'. $class .'.'. $function;
