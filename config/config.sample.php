@@ -554,6 +554,13 @@ $CONFIG = array(
 'proxyexclude' => [],
 
 /**
+ * Allow remote servers with local addresses e.g. in federated shares, webcal services and more
+ *
+ * Defaults to false
+ */
+'allow_local_remote_servers' => true,
+
+/**
  * Deleted Items (trash bin)
  *
  * These parameters control the Deleted files app.
