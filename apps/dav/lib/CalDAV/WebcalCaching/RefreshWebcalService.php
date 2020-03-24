@@ -226,7 +226,7 @@ class RefreshWebcalService {
 				],
 				'handler' => $handlerStack,
 				'nextcloud' => [
-					'allow_local_address' => $allowLocalAccess !== 'yes',
+					'allow_local_address' => $allowLocalAccess === 'yes',
 				]
 			];
 
