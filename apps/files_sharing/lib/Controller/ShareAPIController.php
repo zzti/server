@@ -883,13 +883,26 @@ class ShareAPIController extends OCSController {
 			$nodes[] = $node;
 		}
 
+		// The user that is requesting this list
+		$currentUserFolder = $this->rootFolder->getUserFolder($this->currentUser);
+
 		// for each nodes, retrieve shares.
 		$shares = [];
+
+		// The current top parent we have access to
+		$parent = null;
+
 		foreach ($nodes as $node) {
 			$getShares = $this->getFormattedShares($owner, $node, false, true);
-			$subPath = $userFolder->getRelativePath($node->getPath());
+
+			$currentUserNodes = $currentUserFolder->getById($node->getId());
+			if (!empty($currentUserNodes)) {
+				$parent = array_pop($currentUserNodes);
+			}
+
+			$subPath = $currentUserFolder->getRelativePath($parent->getPath());
 			foreach ($getShares as &$share) {
-				$share['via_fileid'] = $node->getId();
+				$share['via_fileid'] = $parent->getId();
 				$share['via_path'] = $subPath;
 			}
 			$this->mergeFormattedShares($shares, $getShares);
