@@ -851,8 +851,11 @@ class ShareAPIController extends OCSController {
 			throw new OCSNotFoundException($this->l->t('Could not lock path'));
 		}
 
+		if (!($node->getPermissions() & Constants::PERMISSION_SHARE)) {
+			throw new SharingRightsException('no sharing rights on this item');
+		}
 		// current User has resharing rights ?
-		$this->confirmSharingRights($node);
+		//$this->confirmSharingRights($node);
 
 		// initiate real owner.
 		$owner = $node->getOwner()
