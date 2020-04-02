@@ -126,7 +126,6 @@ class BackgroundCleanupJobTest extends \Test\TestCase {
 		foreach ($fileIds as $fileId) {
 			try {
 				$previewRoot->getFolder((string)$fileId);
-				var_dump('Found: ' . $fileId);
 			} catch (NotFoundException $e) {
 				continue;
 			}
@@ -161,30 +160,49 @@ class BackgroundCleanupJobTest extends \Test\TestCase {
 		$this->assertSame(0, $this->countPreviews($root, $fileIds));
 	}
 
-	public function XtestCleanupAjax() {
+	public function testCleanupAjax() {
 		$files = $this->setup11Previews();
+		$fileIds = array_map(function (File $f) {
+			return $f->getId();
+		}, $files);
 
-		$preview = $this->appDataFactory->get('preview');
+		$root = $this->getRoot();
 
-		$previews = $preview->getDirectoryListing();
-		$this->assertCount(11, $previews);
-
-		$job = new BackgroundCleanupJob($this->connection, $this->appDataFactory, $this->mimeTypeLoader, false);
+		$this->assertSame(11, $this->countPreviews($root, $fileIds));
+		$job = new BackgroundCleanupJob($this->connection, $root, $this->mimeTypeLoader, false);
 		$job->run([]);
 
 		foreach ($files as $file) {
 			$file->delete();
 		}
 
-		$this->assertCount(11, $previews);
+		$root = $this->getRoot();
+		$this->assertSame(11, $this->countPreviews($root, $fileIds));
 		$job->run([]);
 
-		$previews = $preview->getDirectoryListing();
-		$this->assertCount(1, $previews);
-
+		$root = $this->getRoot();
+		$this->assertSame(1, $this->countPreviews($root, $fileIds));
 		$job->run([]);
 
-		$previews = $preview->getDirectoryListing();
-		$this->assertCount(0, $previews);
+		$root = $this->getRoot();
+		$this->assertSame(0, $this->countPreviews($root, $fileIds));
+	}
+
+	public function testOldPreviews() {
+		$appdata = \OC::$server->getAppDataDir('preview');
+
+		$f1 = $appdata->newFolder('123456781');
+		$f1->newFile('foo.jpg', 'foo');
+		$f2 = $appdata->newFolder('123456782');
+		$f2->newFile('foo.jpg', 'foo');
+
+		$appdata = \OC::$server->getAppDataDir('preview');
+		$this->assertSame(2, count($appdata->getDirectoryListing()));
+
+		$job = new BackgroundCleanupJob($this->connection, $this->getRoot(), $this->mimeTypeLoader, true);
+		$job->run([]);
+
+		$appdata = \OC::$server->getAppDataDir('preview');
+		$this->assertSame(0, count($appdata->getDirectoryListing()));
 	}
 }
