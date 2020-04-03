@@ -65,7 +65,10 @@
 					</ActionButton>
 				</Actions>
 				<div class="userPopoverMenuWrapper">
-					<div v-click-outside="hideMenu" class="icon-more" @click="$emit('toggleMenu')" />
+					<a href="#"
+						v-click-outside="hideMenu"
+						class="icon icon-more"
+						@click="$emit('toggleMenu')" />
 					<div class="popovermenu" :class="{ 'open': openedMenu }">
 						<PopoverMenu :menu="userActions" />
 					</div>
