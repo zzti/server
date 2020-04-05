@@ -23,10 +23,9 @@
 
 namespace OC\Preview;
 
+use OC\Archive\ZIP;
 use OCP\Files\File;
-use OCP\Files\NotPermittedException;
 use OCP\IImage;
-use OCP\Lock\LockedException;
 
 /**
  * Extracts a preview from files that embed them in an ZIP archive
@@ -42,7 +41,7 @@ abstract class Bundled extends ProviderV2 {
 			$content = stream_get_contents($content);
 			file_put_contents($sourceTmp, $content);
 
-			$zip = new \OC\Archive\ZIP($sourceTmp);
+			$zip = new ZIP($sourceTmp);
 			$zip->extractFile($path, $targetTmp);
 
 			$image = new \OC_Image();
