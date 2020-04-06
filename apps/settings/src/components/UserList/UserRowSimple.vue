@@ -65,10 +65,11 @@
 					</ActionButton>
 				</Actions>
 				<div class="userPopoverMenuWrapper">
-					<a href="#"
+					<button
 						v-click-outside="hideMenu"
 						class="icon icon-more"
-						@click="$emit('toggleMenu')" />
+						:aria-label="t('settings', 'Action menu')"
+						@click.prevent="$emit('toggleMenu')" />
 					<div class="popovermenu" :class="{ 'open': openedMenu }">
 						<PopoverMenu :menu="userActions" />
 					</div>
